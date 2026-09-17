@@ -5,6 +5,6 @@ export type CabinType = {
   regularPrize: number;
   discount: number;
   description: string;
-  image: string;
+  image: File | string;
   created_at?: string;
 };

@@ -4,6 +4,8 @@ import { formatCurrency } from "../../utils/helpers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
+import { useState } from "react";
+import CreateCabinForm from "./CreateCabinForm";
 
 const TableRow = styled.div`
   display: grid;
@@ -46,8 +48,8 @@ const Discount = styled.div`
 function CabinRow({ cabin }: { cabin: CabinType }) {
   const { id, image, regularPrize, discount, description, name, maxCapacity } =
     cabin;
-
   const queryClient = useQueryClient();
+  const [showForm, setShowForm] = useState(false);
 
   const { isPending, mutate } = useMutation({
     mutationFn: (id: string) => deleteCabin(id),
@@ -57,21 +59,29 @@ function CabinRow({ cabin }: { cabin: CabinType }) {
         queryKey: ["cabins"],
       });
     },
-    onError: () => toast.error("Error deleting cabin"),
+    onError: (error) => toast.error(error.message),
   });
 
   return (
-    <TableRow role="row">
-      <Img src={image} alt={description} />
-      <Cabin>{name}</Cabin>
-      <div>Up to {maxCapacity} guests</div>
-      <Price>{formatCurrency(regularPrize)}</Price>
-      <Discount>{formatCurrency(discount)}</Discount>
-      {/* {isPending ? toast.loading("Deleting Cabin...") : null} */}
-      <button onClick={() => mutate(id)} disabled={isPending}>
-        Delete
-      </button>
-    </TableRow>
+    <>
+      <TableRow role="row">
+        <Img src={image} alt={description} />
+        <Cabin>{name}</Cabin>
+        <div>Up to {maxCapacity} guests</div>
+        <Price>{formatCurrency(regularPrize)}</Price>
+        <Discount>{formatCurrency(discount)}</Discount>
+
+        <div>
+          <button onClick={() => setShowForm((showForm) => !showForm)}>
+            Edit
+          </button>
+          <button onClick={() => mutate(id)} disabled={isPending}>
+            Delete
+          </button>
+        </div>
+      </TableRow>
+      {showForm && <CreateCabinForm cabinToEdit={cabin} />}
+    </>
   );
 }
 

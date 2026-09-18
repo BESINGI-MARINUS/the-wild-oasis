@@ -11,6 +11,8 @@ import Textarea from "../../ui/Textarea";
 import type { CabinType } from "../../utils/types";
 import { createEditCabin } from "../../services/apiCabins";
 import FormRow from "../../ui/FormRow";
+import { useCreateCabin } from "./useCreateCabin";
+import { useUpdateCabin } from "./useUpdateCabine";
 
 type CabinToEditProps = {
   cabinToEdit?: CabinType;
@@ -22,30 +24,13 @@ function CreateCabinForm({ cabinToEdit }: CabinToEditProps = {}) {
 
   const { register, handleSubmit, reset, getValues, formState } =
     useForm<CabinType>({ defaultValues: isEditSession ? cabinToEdit : {} });
-  const queryClient = useQueryClient();
   const { errors } = formState;
 
   // 1. Create cabin mutation
-  const { mutate: createCabin, isPending: isCreating } = useMutation({
-    mutationFn: createEditCabin,
-    onSuccess: () => {
-      toast.success("Cabin created successfully");
-      queryClient.invalidateQueries({ queryKey: ["cabins"] });
-      reset();
-    },
-    onError: (error) => toast.error(error.message),
-  });
+  const { createCabin, isCreating } = useCreateCabin();
 
   // 2. Update cabin mutation
-  const { mutate: updateCabin, isPending: isUpdating } = useMutation({
-    mutationFn: ({ cabin, id }) => createEditCabin(cabin, id),
-    onSuccess: () => {
-      toast.success("Cabin updated successfully");
-      queryClient.invalidateQueries({ queryKey: ["cabins"] });
-      reset();
-    },
-    onError: (error) => toast.error(error.message),
-  });
+  const { updateCabin, isUpdating } = useUpdateCabin();
 
   function onSubmit(data: CabinType) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
@@ -54,8 +39,13 @@ function CreateCabinForm({ cabinToEdit }: CabinToEditProps = {}) {
       console.log("Is Editing Session");
       updateCabin({ cabin: { ...data, image }, id: cabinToEdit.id });
     } else {
-      console.log("Creating Cabin");
-      createCabin({ ...data, image });
+      // createCabin === mutate fxn, and we passed the second object of options because the reset function was no longer available in the custom useCreateCabin hook. so react query gives us this second option...
+      createCabin(
+        { ...data, image },
+        {
+          onSuccess: (data) => reset(),
+        },
+      );
     }
   }
 

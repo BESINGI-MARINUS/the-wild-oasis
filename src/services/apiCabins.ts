@@ -31,13 +31,11 @@ export async function createEditCabin(
 
   // A. Create
   if (!hasImagePath) {
-    console.log("Creating Cabin...");
     query = query.insert([{ ...cabin, image: imageUrl }]);
   }
 
   // B. Edit
   if (hasImagePath) {
-    console.log("Updating Cabin");
     query = query.update({ ...cabin, image: imageUrl }).eq("id", id);
   }
 

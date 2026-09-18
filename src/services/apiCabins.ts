@@ -30,10 +30,16 @@ export async function createEditCabin(
   let query = supabase.from("cabins");
 
   // A. Create
-  if (!id) query = query.insert([{ ...cabin, image: imageUrl }]);
+  if (!hasImagePath) {
+    console.log("Creating Cabin...");
+    query = query.insert([{ ...cabin, image: imageUrl }]);
+  }
 
   // B. Edit
-  if (id) query = query.update({ ...cabin, image: imageUrl }).eq("id", id);
+  if (hasImagePath) {
+    console.log("Updating Cabin");
+    query = query.update({ ...cabin, image: imageUrl }).eq("id", id);
+  }
 
   const { data, error } = await query.select();
 

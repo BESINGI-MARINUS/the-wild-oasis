@@ -16,15 +16,18 @@ export async function createEditCabin(
   cabin: CabinType,
   id: string | undefined,
 ) {
-  const hasImagePath = typeof cabin.image === "string";
+  const hasImagePath =
+    typeof cabin.image === "string" && !cabin.name.startsWith("Copy of");
+
   let imagename;
 
   if (!hasImagePath)
     imagename = `${Math.random()}-${cabin.image?.name?.replaceAll("/", "")}`;
 
-  const imageUrl = hasImagePath
-    ? cabin.image
-    : `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/cabin-images/${imagename}`;
+  const imageUrl =
+    hasImagePath || cabin.name.startsWith("Copy of")
+      ? cabin.image
+      : `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/cabin-images/${imagename}`;
 
   // 1. Create/Edit Cabin
   let query = supabase.from("cabins");

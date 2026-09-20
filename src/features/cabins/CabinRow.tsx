@@ -4,6 +4,13 @@ import { formatCurrency } from "../../utils/helpers";
 import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
 import { useDeleteCabin } from "./useDeleteCabin";
+import ButtonIcon from "../../ui/ButtonIcon";
+import {
+  PencilIcon,
+  Square2StackIcon,
+  TrashIcon,
+} from "@heroicons/react/16/solid";
+import { useCreateCabin } from "./useCreateCabin";
 
 const TableRow = styled.div`
   display: grid;
@@ -48,6 +55,18 @@ function CabinRow({ cabin }: { cabin: CabinType }) {
     cabin;
   const [showForm, setShowForm] = useState(false);
   const { isDeleting, deleteCabin } = useDeleteCabin();
+  const { isCreating: isDuplicating, createCabin } = useCreateCabin();
+
+  function handleDuplicate() {
+    createCabin({
+      name: `Copy of ${name}`,
+      image,
+      regularPrize,
+      discount,
+      description,
+      maxCapacity,
+    });
+  }
 
   return (
     <>
@@ -63,12 +82,15 @@ function CabinRow({ cabin }: { cabin: CabinType }) {
         )}
 
         <div>
-          <button onClick={() => setShowForm((showForm) => !showForm)}>
-            Edit
-          </button>
-          <button onClick={() => deleteCabin(id)} disabled={isDeleting}>
-            Delete
-          </button>
+          <ButtonIcon onClick={handleDuplicate} disabled={isDuplicating}>
+            <Square2StackIcon />
+          </ButtonIcon>
+          <ButtonIcon onClick={() => setShowForm((showForm) => !showForm)}>
+            <PencilIcon />
+          </ButtonIcon>
+          <ButtonIcon onClick={() => deleteCabin(id)} disabled={isDeleting}>
+            <TrashIcon />
+          </ButtonIcon>
         </div>
       </TableRow>
       {showForm && <CreateCabinForm cabinToEdit={cabin} />}

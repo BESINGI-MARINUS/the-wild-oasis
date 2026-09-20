@@ -9,7 +9,7 @@ export function useCreateCabin() {
     onSuccess: () => {
       toast.success("Cabin created successfully");
       queryClient.invalidateQueries({ queryKey: ["cabins"] });
-      //   reset();
+      //   reset(); This is coming from react-hook-forms, so we cannot access here.
     },
     onError: (error) => toast.error(error.message),
   });

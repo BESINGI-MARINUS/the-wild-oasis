@@ -8,3 +8,11 @@ export type CabinType = {
   image: File | { name: string };
   created_at?: string;
 };
+export interface SettingsType {
+  id?: number;
+  breakfastPrice: number;
+  created_at?: string;
+  maxBookingLength: number;
+  maxGuestPerBooking: number;
+  minBookingLength: number;
+}

@@ -36,7 +36,6 @@ function CreateCabinForm({ cabinToEdit }: CabinToEditProps = {}) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
 
     if (isEditSession) {
-      console.log("Is Editing Session");
       updateCabin({ cabin: { ...data, image }, id: cabinToEdit.id });
     } else {
       // createCabin === mutate fxn, and we passed the second object of options because the reset function was no longer available in the custom useCreateCabin hook. so react query gives us this second option...

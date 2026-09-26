@@ -12,10 +12,14 @@ export async function getCabins() {
   return data;
 }
 
-export async function createEditCabin(
-  cabin: CabinType,
-  id: string | undefined,
-) {
+export async function createEditCabin({
+  cabin,
+  id,
+}: {
+  cabin: CabinType;
+  id?: string;
+}) {
+  console.log(cabin);
   const hasImagePath =
     typeof cabin.image === "string" && !cabin.name.startsWith("Copy of");
 

@@ -1,3 +1,6 @@
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { cloneElement, createContext, useContext, useState } from "react";
+import { createPortal } from "react-dom";
 import styled from "styled-components";
 
 const StyledModal = styled.div`
@@ -48,3 +51,94 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
+
+// TYPES
+type ModalContextType = {
+  openWindow?: string;
+  close?: () => void;
+  open?: (str: string) => void;
+};
+
+type ModalProps = {
+  children: React.ReactNode;
+};
+
+type OpenProps = {
+  children: React.ReactElement<{ onClick?: React.MouseEventHandler }>;
+  opens: string;
+};
+
+type WindowProps = {
+  children: React.ReactElement<{ onCloseModal?: () => void }>;
+  name: string;
+};
+
+const ModalContext = createContext<ModalContextType>({});
+function Modal({ children }: ModalProps) {
+  const [openWindow, setOpenWindow] = useState("");
+
+  const open = (str: string) => {
+    console.log(str);
+    setOpenWindow(str);
+  };
+  const close = () => setOpenWindow("");
+
+  return (
+    <ModalContext.Provider value={{ openWindow, open, close }}>
+      {children}
+    </ModalContext.Provider>
+  );
+}
+
+function Open({ children, opens: opensWindowName }: OpenProps) {
+  const { open } = useContext(ModalContext);
+
+  return cloneElement(children, { onClick: () => open?.(opensWindowName) });
+}
+
+function Window({ children, name }: WindowProps) {
+  const { openWindow, close } = useContext(ModalContext);
+
+  if (openWindow !== name) return null;
+
+  return createPortal(
+    <Overlay>
+      <StyledModal>
+        <Button onClick={() => close?.()}>
+          <XMarkIcon />
+        </Button>
+        {cloneElement(children, {
+          onCloseModal: close,
+        })}
+      </StyledModal>
+    </Overlay>,
+    document.body,
+  );
+}
+
+Modal.Open = Open;
+Modal.Window = Window;
+
+export default Modal;
+
+// MODAL BEFORE COMPOUND CONVERTING TO COMPOUND COMPONENT
+// function Modal({
+//   children,
+//   onClose,
+// }: {
+//   children: React.ReactElement;
+//   onClose: (a: boolean) => void;
+// }) {
+//   return createPortal(
+//     <Overlay>
+//       <StyledModal>
+//         <Button onClick={() => onClose(false)}>
+//           <XMarkIcon />
+//         </Button>
+//         {children}
+//       </StyledModal>
+//       ;
+//     </Overlay>,
+//     document.body,
+//   );
+// }

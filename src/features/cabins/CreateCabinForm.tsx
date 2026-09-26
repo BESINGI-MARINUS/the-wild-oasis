@@ -1,7 +1,5 @@
 // import styled from "styled-components";
 import { useForm } from "react-hook-form";
-import toast from "react-hot-toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
@@ -9,17 +7,19 @@ import Button from "../../ui/Button";
 import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import type { CabinType } from "../../utils/types";
-import { createEditCabin } from "../../services/apiCabins";
 import FormRow from "../../ui/FormRow";
 import { useCreateCabin } from "./useCreateCabin";
 import { useUpdateCabin } from "./useUpdateCabine";
 
-type CabinToEditProps = {
+type CreateCabinFormProps = {
   cabinToEdit?: CabinType;
-  // onClose: () => void;
+  onCloseModal?: () => void;
 };
 
-function CreateCabinForm({ cabinToEdit }: CabinToEditProps = {}) {
+function CreateCabinForm({
+  cabinToEdit,
+  onCloseModal,
+}: CreateCabinFormProps = {}) {
   const isEditSession = Boolean(cabinToEdit?.id);
 
   const { register, handleSubmit, reset, getValues, formState } =
@@ -36,13 +36,16 @@ function CreateCabinForm({ cabinToEdit }: CabinToEditProps = {}) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
 
     if (isEditSession) {
-      updateCabin({ cabin: { ...data, image }, id: cabinToEdit.id });
+      updateCabin({ cabin: { ...data, image }, id: cabinToEdit?.id });
     } else {
       // createCabin === mutate fxn, and we passed the second object of options because the reset function was no longer available in the custom useCreateCabin hook. so react query gives us this second option...
       createCabin(
-        { ...data, image },
+        { cabin: { ...data, image } },
         {
-          onSuccess: (data) => reset(),
+          onSuccess: () => {
+            reset();
+            onCloseModal?.();
+          },
         },
       );
     }
@@ -50,12 +53,16 @@ function CreateCabinForm({ cabinToEdit }: CabinToEditProps = {}) {
 
   const isWorking = isCreating || isUpdating;
 
-  function onError(error) {
-    console.log(error);
-  }
+  // function onError(error) {
+  //   console.log(error);
+  // }
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form
+      // onSubmit={handleSubmit(onSubmit, onError)}
+      onSubmit={handleSubmit(onSubmit)}
+      type={onCloseModal ? "modal" : "regular"}
+    >
       <FormRow label="Cabin name" error={errors?.name?.message}>
         <Input
           type="text"
@@ -118,7 +125,6 @@ function CreateCabinForm({ cabinToEdit }: CabinToEditProps = {}) {
       </FormRow>
 
       <FormRow label="Cabin photo">
-        {/* <Label htmlFor="image">Cabin photo</Label> */}
         <FileInput
           id="image"
           accept="image/*"
@@ -129,18 +135,20 @@ function CreateCabinForm({ cabinToEdit }: CabinToEditProps = {}) {
       </FormRow>
 
       <FormRow>
-        {/* type is an HTML attribute! */}
-        <Button
-          variation="secondary"
-          size="medium"
-          type="reset"
-          disabled={isWorking}
-        >
-          Clear Form
-        </Button>
-        <Button variation="primary" size="medium" disabled={isWorking}>
-          {isEditSession ? "Save Changes" : "Create Cabin"}
-        </Button>
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <Button
+            variation="secondary"
+            size="medium"
+            type="reset"
+            disabled={isWorking}
+            onClick={() => onCloseModal?.()}
+          >
+            Clear Form
+          </Button>
+          <Button variation="primary" size="medium" disabled={isWorking}>
+            {isEditSession ? "Save Changes" : "Create Cabin"}
+          </Button>
+        </div>
       </FormRow>
     </Form>
   );

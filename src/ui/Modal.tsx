@@ -2,6 +2,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { cloneElement, createContext, useContext, useState } from "react";
 import { createPortal } from "react-dom";
 import styled from "styled-components";
+import { useOutsideClick } from "../hooks/useOutsideClick";
 
 const StyledModal = styled.div`
   position: fixed;
@@ -78,7 +79,6 @@ function Modal({ children }: ModalProps) {
   const [openWindow, setOpenWindow] = useState("");
 
   const open = (str: string) => {
-    console.log(str);
     setOpenWindow(str);
   };
   const close = () => setOpenWindow("");
@@ -99,11 +99,13 @@ function Open({ children, opens: opensWindowName }: OpenProps) {
 function Window({ children, name }: WindowProps) {
   const { openWindow, close } = useContext(ModalContext);
 
+  const { ref } = useOutsideClick(close);
+
   if (openWindow !== name) return null;
 
   return createPortal(
     <Overlay>
-      <StyledModal>
+      <StyledModal ref={ref}>
         <Button onClick={() => close?.()}>
           <XMarkIcon />
         </Button>

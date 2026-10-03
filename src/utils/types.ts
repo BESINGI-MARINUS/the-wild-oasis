@@ -5,7 +5,7 @@ export type CabinType = {
   regularPrize: number;
   discount: number;
   description: string;
-  image: File | { name: string };
+  image: FileList | string | { name: string };
   created_at?: string;
 };
 export interface SettingsType {

@@ -16,6 +16,10 @@ type CreateCabinFormProps = {
   onCloseModal?: () => void;
 };
 
+// type CabinFormValues = Omit<CabinType, "image"> & {
+//   image: CabinType["image"] | FileList;
+// };
+
 function CreateCabinForm({
   cabinToEdit,
   onCloseModal,
@@ -23,7 +27,9 @@ function CreateCabinForm({
   const isEditSession = Boolean(cabinToEdit?.id);
 
   const { register, handleSubmit, reset, getValues, formState } =
-    useForm<CabinType>({ defaultValues: isEditSession ? cabinToEdit : {} });
+    useForm<CabinType>({
+      defaultValues: isEditSession ? cabinToEdit : {},
+    });
   const { errors } = formState;
 
   // 1. Create cabin mutation
@@ -33,10 +39,15 @@ function CreateCabinForm({
   const { updateCabin, isUpdating } = useUpdateCabin();
 
   function onSubmit(data: CabinType) {
-    const image = typeof data.image === "string" ? data.image : data.image[0];
+    const image =
+      data.image instanceof FileList
+        ? (data.image.item(0) ?? cabinToEdit?.image)
+        : data.image;
+
+    if (!image) throw new Error("Cabin image is required");
 
     if (isEditSession) {
-      updateCabin({ cabin: { ...data, image }, id: cabinToEdit?.id });
+      updateCabin({ cabin: { ...data, image }, id: cabinToEdit?.id as string });
     } else {
       // createCabin === mutate fxn, and we passed the second object of options because the reset function was no longer available in the custom useCreateCabin hook. so react query gives us this second option...
       createCabin(

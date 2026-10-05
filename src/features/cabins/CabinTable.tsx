@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { useCabins } from "./useCabins";
 import Table from "../../ui/Table";
 import type { CabinType } from "../../utils/types";
+import Menus from "../../ui/Menus";
 
 function CabinTable() {
   const { isLoading, isError, error, cabins } = useCabins();
@@ -11,7 +12,7 @@ function CabinTable() {
   if (isError) toast.error((error && error.message) || "Error loading cabins");
 
   return (
-    <div>
+    <Menus>
       <Table columns="0.6fr 1.8fr 2.2fr 1fr 1fr 1fr">
         <Table.Header>
           <div></div>
@@ -22,13 +23,13 @@ function CabinTable() {
           <div></div>
         </Table.Header>
         <Table.Body
-          data={cabins}
+          data={cabins as CabinType[]}
           render={(cabin: CabinType) => (
             <CabinRow cabin={cabin} key={cabin.id} />
           )}
         />
       </Table>
-    </div>
+    </Menus>
   );
 }
 

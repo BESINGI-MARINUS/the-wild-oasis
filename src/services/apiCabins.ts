@@ -19,7 +19,6 @@ export async function createEditCabin({
   cabin: CabinType;
   id?: string;
 }) {
-  console.log(cabin);
   const hasImagePath =
     typeof cabin.image === "string" && cabin.image.includes("supabase");
 

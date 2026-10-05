@@ -3,7 +3,6 @@ import type { CabinType } from "../../utils/types";
 import { formatCurrency } from "../../utils/helpers";
 import CreateCabinForm from "./CreateCabinForm";
 import { useDeleteCabin } from "./useDeleteCabin";
-import ButtonIcon from "../../ui/ButtonIcon";
 import {
   PencilIcon,
   Square2StackIcon,
@@ -13,18 +12,7 @@ import { useCreateCabin } from "./useCreateCabin";
 import Modal from "../../ui/Modal";
 import ConfirmDelete from "../../ui/ConfirmDelete";
 import Table from "../../ui/Table";
-
-// const TableRow = styled.div`
-//   display: grid;
-//   grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
-//   column-gap: 2.4rem;
-//   align-items: center;
-//   padding: 1.4rem 2.4rem;
-
-//   &:not(:last-child) {
-//     border-bottom: 1px solid var(--color-grey-100);
-//   }
-// `;
+import Menus from "../../ui/Menus";
 
 const Img = styled.img`
   display: block;
@@ -58,7 +46,7 @@ function CabinRow({ cabin }: { cabin: CabinType }) {
   const imageUrl = image instanceof File ? URL.createObjectURL(image) : image;
 
   const { isDeleting, deleteCabin } = useDeleteCabin();
-  const { isCreating: isDuplicating, createCabin } = useCreateCabin();
+  const { createCabin } = useCreateCabin();
 
   function handleDuplicate() {
     createCabin({
@@ -86,32 +74,39 @@ function CabinRow({ cabin }: { cabin: CabinType }) {
       )}
 
       <div>
-        <ButtonIcon onClick={handleDuplicate} disabled={isDuplicating}>
-          <Square2StackIcon />
-        </ButtonIcon>
-
         <Modal>
-          <Modal.Open opens="editForm">
-            <ButtonIcon>
-              <PencilIcon />
-            </ButtonIcon>
-          </Modal.Open>
-          <Modal.Window name="editForm">
-            <CreateCabinForm cabinToEdit={cabin} />
-          </Modal.Window>
+          <Menus.Menu>
+            <Menus.Toggle id={id as string} />
 
-          <Modal.Open opens="delete">
-            <ButtonIcon disabled={isDeleting}>
-              <TrashIcon />
-            </ButtonIcon>
-          </Modal.Open>
-          <Modal.Window name="delete">
-            <ConfirmDelete
-              onConfirm={() => deleteCabin(id as string)}
-              resourceName="cabin"
-              disabled={isDeleting}
-            />
-          </Modal.Window>
+            <Menus.List id={id as string}>
+              <Menus.Button
+                icon={<Square2StackIcon />}
+                onClick={handleDuplicate}
+              >
+                Duplicate
+              </Menus.Button>
+
+              <Modal.Open opens="editForm">
+                <Menus.Button icon={<PencilIcon />}>Update</Menus.Button>
+              </Modal.Open>
+
+              <Modal.Open opens="delete">
+                <Menus.Button icon={<TrashIcon />}>Delete</Menus.Button>
+              </Modal.Open>
+            </Menus.List>
+
+            <Modal.Window name="editForm">
+              <CreateCabinForm cabinToEdit={cabin} />
+            </Modal.Window>
+
+            <Modal.Window name="delete">
+              <ConfirmDelete
+                onConfirm={() => deleteCabin(id as string)}
+                resourceName="cabin"
+                disabled={isDeleting}
+              />
+            </Modal.Window>
+          </Menus.Menu>
         </Modal>
       </div>
     </Table.Row>

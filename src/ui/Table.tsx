@@ -10,7 +10,7 @@ const StyledTable = styled.div`
   overflow: hidden;
 `;
 
-const CommonRow = styled.div`
+const CommonRow = styled.div<{ columns: string }>`
   display: grid;
   grid-template-columns: ${(props) => props.columns};
   column-gap: 2.4rem;
@@ -94,12 +94,12 @@ function Row({ children }: { children: React.ReactNode }) {
     </StyledRow>
   );
 }
-function Body({
+function Body<T>({
   data,
   render,
 }: {
-  data: object[];
-  render: (item: unknown) => React.ReactNode;
+  data: T[];
+  render: (item: T) => React.ReactNode;
 }) {
   if (!data.length) return <Empty>There is no data to display as of now</Empty>;
 

@@ -3,6 +3,7 @@ import type { CabinType } from "../../utils/types";
 import { formatCurrency } from "../../utils/helpers";
 import CreateCabinForm from "./CreateCabinForm";
 import { useDeleteCabin } from "./useDeleteCabin";
+
 import {
   PencilIcon,
   Square2StackIcon,
@@ -46,7 +47,7 @@ function CabinRow({ cabin }: { cabin: CabinType }) {
   const imageUrl = image instanceof File ? URL.createObjectURL(image) : image;
 
   const { isDeleting, deleteCabin } = useDeleteCabin();
-  const { createCabin } = useCreateCabin();
+  const { isCreating: isDuplicating, createCabin } = useCreateCabin();
 
   function handleDuplicate() {
     createCabin({
@@ -82,6 +83,7 @@ function CabinRow({ cabin }: { cabin: CabinType }) {
               <Menus.Button
                 icon={<Square2StackIcon />}
                 onClick={handleDuplicate}
+                disabled={isDuplicating}
               >
                 Duplicate
               </Menus.Button>

@@ -136,9 +136,10 @@ interface ButtonProps {
   children: React.ReactNode;
   icon: React.ReactNode;
   onClick?: () => void;
+  disabled?: boolean;
 }
 
-function Button({ children, icon, onClick }: ButtonProps) {
+function Button({ children, icon, onClick, disabled }: ButtonProps) {
   const context = useContext(MenusContext);
   if (!context) throw new Error("Menus context must be used within Menus");
 
@@ -150,7 +151,7 @@ function Button({ children, icon, onClick }: ButtonProps) {
 
   return (
     <li>
-      <StyledButton onClick={handleClick}>
+      <StyledButton onClick={handleClick} disabled={disabled}>
         {icon} <span>{children}</span>
       </StyledButton>
     </li>

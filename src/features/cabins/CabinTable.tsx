@@ -14,6 +14,7 @@ function CabinTable() {
   if (isLoading) return <Spinner />;
   if (isError) toast.error((error && error.message) || "Error loading cabins");
 
+  // 1. Filter by discount
   const filterByDiscount = searchParams.get("discount") || "all";
   let filteredCabins;
   if (filterByDiscount === "all") filteredCabins = cabins;
@@ -21,6 +22,14 @@ function CabinTable() {
     filteredCabins = cabins?.filter((cabin) => cabin.discount === 0);
   if (filterByDiscount === "with-discount")
     filteredCabins = cabins?.filter((cabin) => cabin.discount > 0);
+
+  // 2. Sort
+  const sortBy = searchParams.get("sortBy") || "name-asc";
+  const [sortField, sortOrder] = sortBy.split("-");
+  const modifier = sortOrder === "asc" ? 1 : -1;
+  const sortedCabins = filteredCabins?.sort(
+    (a, b) => (a[sortField] - b[sortField]) * modifier,
+  );
 
   return (
     <Menus>
@@ -34,7 +43,7 @@ function CabinTable() {
           <div></div>
         </Table.Header>
         <Table.Body
-          data={filteredCabins as CabinType[]}
+          data={sortedCabins as CabinType[]}
           render={(cabin: CabinType) => (
             <CabinRow cabin={cabin} key={cabin.id} />
           )}

@@ -6,6 +6,8 @@ import Table from "../../ui/Table";
 
 import { formatCurrency } from "../../utils/helpers";
 import { formatDistanceFromNow } from "../../utils/helpers";
+import type { BookingStatus, BookingType } from "../../utils/types";
+import type { TagType } from "../../ui/Tag";
 
 const Cabin = styled.div`
   font-size: 1.6rem;
@@ -34,21 +36,21 @@ const Amount = styled.div`
   font-weight: 500;
 `;
 
-function BookingRow({
-  booking: {
-    id: bookingId,
-    created_at,
+function BookingRow({ booking }: { booking: BookingType }) {
+  const {
+    // id: bookingId,
+    // created_at,
     startDate,
     endDate,
     numNights,
-    numGuests,
+    // numGuests,
     totalPrice,
     status,
     guests: { fullName: guestName, email },
     cabins: { name: cabinName },
-  },
-}) {
-  const statusToTagName = {
+  } = booking;
+  const statusToTagName: Record<BookingStatus, TagType> = {
+    pending: "blue",
     unconfirmed: "blue",
     "checked-in": "green",
     "checked-out": "silver",

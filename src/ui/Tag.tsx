@@ -1,6 +1,14 @@
 import styled from "styled-components";
 
-const Tag = styled.span`
+export type TagType = "blue" | "green" | "silver";
+
+type TagProps = {
+  type: TagType;
+};
+
+const Tag = styled.span.withConfig({
+  shouldForwardProp: (prop) => prop !== "type",
+})<TagProps>`
   width: fit-content;
   text-transform: uppercase;
   font-size: 1.1rem;
@@ -8,7 +16,6 @@ const Tag = styled.span`
   padding: 0.4rem 1.2rem;
   border-radius: 100px;
 
-  /* Make these dynamic, based on the received prop */
   color: var(--color-${(props) => props.type}-700);
   background-color: var(--color-${(props) => props.type}-100);
 `;

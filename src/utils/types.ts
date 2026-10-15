@@ -8,6 +8,7 @@ export type CabinType = {
   image: FileList | string | { name: string };
   created_at?: string;
 };
+
 export interface SettingsType {
   id?: number;
   breakfastPrice: number;
@@ -15,4 +16,38 @@ export interface SettingsType {
   maxBookingLength: number;
   maxGuestPerBooking: number;
   minBookingLength: number;
+}
+
+export type BookingStatus =
+  | "pending"
+  | "unconfirmed"
+  | "checked-in"
+  | "checked-out";
+
+export interface GuestType {
+  id: string;
+  email: string;
+  fullName: string;
+  created_at?: string;
+  nationalID: string;
+  countryFlag?: string;
+  nationality: string;
+}
+
+export interface BookingType {
+  id: number;
+  created_at?: string;
+  startDate: string;
+  endDate: string;
+  numNights: number;
+  numGuests: number;
+  cabinPrice: number;
+  extrasPrice: number;
+  totalPrice: number;
+  status: BookingStatus;
+  hasBreakfast: boolean;
+  hasPaid: boolean;
+  observations: string | null;
+  guests: GuestType;
+  cabins: CabinType;
 }

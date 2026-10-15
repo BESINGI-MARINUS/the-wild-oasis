@@ -3,12 +3,13 @@ import styled from "styled-components";
 import BookingDataBox from "./BookingDataBox";
 import Row from "../../ui/Row";
 import Heading from "../../ui/Heading";
-import Tag from "../../ui/Tag";
+import Tag, { type TagType } from "../../ui/Tag";
 import ButtonGroup from "../../ui/ButtonGroup";
 import Button from "../../ui/Button";
 import ButtonText from "../../ui/ButtonText";
 
 import { useMoveBack } from "../../hooks/useMoveBack";
+import type { BookingStatus } from "../../utils/types";
 
 const HeadingGroup = styled.div`
   display: flex;
@@ -18,11 +19,12 @@ const HeadingGroup = styled.div`
 
 function BookingDetail() {
   const booking = {};
-  const status = "checked-in";
+  const status: BookingStatus = "checked-in";
 
   const moveBack = useMoveBack();
 
-  const statusToTagName = {
+  const statusToTagName: Record<BookingStatus, TagType> = {
+    pending: "blue",
     unconfirmed: "blue",
     "checked-in": "green",
     "checked-out": "silver",
